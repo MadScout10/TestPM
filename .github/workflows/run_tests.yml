@@ -1,0 +1,51 @@
+name: Autotests
+
+on:
+  workflow_dispatch:
+    inputs:
+      deployment_target:
+        description: Choose target
+        required: true
+        default: smoke_tests
+        type: choice
+        options:
+          - smoke_tests
+          - regression_tests
+          - pb1 smoke_tests
+          - pb1 regression_tests
+          - test700 smoke_tests
+          - test700 regression_tests
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Install Chrome
+        run: sudo apt-get install google-chrome-stable
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: smoke_tests
+        if: "github.event.inputs.deployment_target == 'smoke_tests'"
+        run: pytest -m smoke
+      - name: regression_tests
+        if: "github.event.inputs.deployment_target == 'regression_tests'"
+        run: pytest -m regression
+      - name: pb1 smoke_tests
+        if: "github.event.inputs.deployment_target == 'pb1 smoke_tests'"
+        run: pytest -m smoke --stage https://pm.ru/user/switch_platform/?platform=2
+      - name: pb1 regression_tests
+        if: "github.event.inputs.deployment_target == 'pb1 regression_tests'"
+        run: pytest -m regression --stage https://pm.ru/user/switch_platform/?platform=2
+      - name: test700 smoke_tests
+        if: "github.event.inputs.deployment_target == 'test700 smoke_tests'"
+        run: pytest -m smoke --stage http://m.testpm.ru:700/
+      - name: test700 regression_tests
+        if: "github.event.inputs.deployment_target == 'test700 regression_tests'"
+        run: pytest -m regression --stage http://m.testpm.ru:700/
