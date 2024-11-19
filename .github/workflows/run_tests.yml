@@ -49,3 +49,24 @@ jobs:
       - name: test700 regression_tests
         if: "github.event.inputs.deployment_target == 'test700 regression_tests'"
         run: pytest -m regression --stage http://m.testpm.ru:700/
+        
+  generate-report:
+      runs-on: ubunty-latest
+      needs: test
+      name: generate report
+      steps:
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'microsoft'
+          java-vrersion: '17'
+      - run: sudo wget https://github.com/allure-framework/allure2/releases/download/2.23.1/allure-2.23.1.tgz && sudo tar -zxvf allure-2.23.1.tgz -C /opt/ && sudo ln -s /opt/allure-2.23.1/bin/allure /usr/bin/allure
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v3
+      - run: allure generate -c allure-results -o _site
+      - name: Store generated report
+        uses: actions/upload-artifact@v3
+        with:
+          name: _site
+          path:
+            _site
+          retention-days: 1
