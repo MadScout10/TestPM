@@ -1,0 +1,11 @@
+-v - фербозный, больше информации
+-s - выводить принты в консоли
+-m "метка" либо "not метка"- запуск с опред. метками либо без них
+-rx & -rX - xfail & xpass
+--reruns n - переззапустить n раз
+--browser_name="имя браузера" - запуск на определенном браузере
+--tb=line - сокращение лога, подробнее https://docs.pytest.org/en/stable/usage.html#modifying-python-traceback-printing
+--language=(es, fr, ru, en) задать яззык интерефеейса
+
+
+
