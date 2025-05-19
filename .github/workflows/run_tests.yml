@@ -33,33 +33,40 @@ jobs:
         run: pip install -r requirements.txt
       - name: smoke_tests
         if: "github.event.inputs.deployment_target == 'smoke_tests'"
-        run: pytest -m smoke --alluredir results
+        run: pytest -m smoke --alluredir=results
         continue-on-error: true
       - name: regression_tests
         if: "github.event.inputs.deployment_target == 'regression_tests'"
-        run: pytest -m regression --alluredir results
+        run: pytest -m regression --alluredir=results
         continue-on-error: true
       - name: pb1 smoke_tests
         if: "github.event.inputs.deployment_target == 'pb1 smoke_tests'"
-        run: pytest -m smoke --stage https://pm.ru/user/switch_platform/?platform=2 --alluredir results
+        run: pytest -m smoke --stage https://pm.ru/user/switch_platform/?platform=2 --alluredir=results
         continue-on-error: true
       - name: pb1 regression_tests
         if: "github.event.inputs.deployment_target == 'pb1 regression_tests'"
-        run: pytest -m regression --stage https://pm.ru/user/switch_platform/?platform=2 --alluredir results
+        run: pytest -m regression --stage https://pm.ru/user/switch_platform/?platform=2 --alluredir=results
         continue-on-error: true
       - name: test700 smoke_tests
         if: "github.event.inputs.deployment_target == 'test700 smoke_tests'"
-        run: pytest -m smoke --stage http://m.testpm.ru:700/ --alluredir results
+        run: pytest -m smoke --stage http://m.testpm.ru:700/ --alluredir=results
         continue-on-error: true
       - name: test700 regression_tests
         if: "github.event.inputs.deployment_target == 'test700 regression_tests'"
-        run: pytest -m regression --stage http://m.testpm.ru:700/ --alluredir results
+        run: pytest -m regression --stage http://m.testpm.ru:700/ --alluredir=results
         continue-on-error: true
+      - name: Store allure results
+        uses: actions/upload-artifact@v3
+        with:
+          name: results
+          path:
+            results
+          retention-days: 1
         
   generate-report:
     runs-on: ubunty-latest
     needs: test
-    name: generate report
+    name: Generate report
     steps:
       - uses: actions/setup-java@v3
         with:
