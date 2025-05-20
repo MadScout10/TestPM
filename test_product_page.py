@@ -15,7 +15,7 @@ class TestsSmoke:
         page.open()
         page.is_prodcard_open()
 
-    @pytest.mark.smoke
+    @pytest.mark.regression
     @allure.title("Проверка наличия кнопки купить в КТ")
     def test_is_buybutton_present(self, browser, initstage):
         link = initstage + "category/mebel-dlya-doma/divany/pryamye-divany/goods-divan_oazis-id157113/"
