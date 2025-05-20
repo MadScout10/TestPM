@@ -81,13 +81,6 @@ jobs:
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v4
       - run: allure generate -c results -o _site
-      - name: Store generated report
-        uses: actions/upload-artifact@v4
-        with:
-          name: _site
-          path:
-            _site
-          retention-days: 1
           
   publish-report:
     runs-on: self-hosted
