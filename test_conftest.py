@@ -3,6 +3,7 @@ import allure
 import pytest
 
 
+@pytest.mark.new
 @pytest.mark.smoke
 @allure.title('Проверка работы конфига')
 def test_guest_should_see_login_link(browser):
