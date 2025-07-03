@@ -99,6 +99,7 @@ jobs:
           name: results
           path:
             results
+          overwrite: true
           retention-days: 1
         
   generate-report:
