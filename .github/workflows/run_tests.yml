@@ -15,6 +15,7 @@ on:
           - pb1 regression_tests
           - test700 smoke_tests
           - test700 regression_tests
+          - conftest
 
 permissions:
   contents: read
