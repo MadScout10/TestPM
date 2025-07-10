@@ -3,7 +3,6 @@ name: Infinite Test Runner
 on:
   schedule:
     - cron: '*/10 * * * *'  # Каждые 5 минут
-  workflow_dispatch: {}
           
 permissions:
   contents: read
