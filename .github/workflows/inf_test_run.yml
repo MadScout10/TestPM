@@ -2,16 +2,8 @@ name: Infinite Test Runner
 
 on:
   schedule:
-    - cron: '*/15 * * * *'  # Каждые 5 минут
-  workflow_dispatch:
-    inputs:
-      deployment_target:
-        description: Choose target
-        required: true
-        default: smoke_tests
-        type: choice
-        options:
-          - smoke_tests
+    - cron: '*/10 * * * *'  # Каждые 5 минут
+  workflow_dispatch: {}
           
 permissions:
   contents: read
@@ -80,7 +72,6 @@ jobs:
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v4
       - name: Run tests infinitely
-        if: "github.event.inputs.deployment_target == 'smoke_tests'"
         run: pytest -m smoke --alluredir=results
         continue-on-error: true
       - name: Store allure results
