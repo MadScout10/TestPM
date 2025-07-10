@@ -75,7 +75,7 @@ jobs:
         run: |
           while :; do
             echo "### Starting test iteration ###" >> test.log
-            npm test >> test.log 2>&1 || echo "Tests failed, but continuing..." >> test.log
+            pytest -m smoke --alluredir=results >> test.log 2>&1 || echo "Tests failed, but continuing..." >> test.log
             sleep 10  # Пауза между запусками
           done
         continue-on-error: true
