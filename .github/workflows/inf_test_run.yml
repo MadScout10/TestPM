@@ -1,9 +1,8 @@
 name: Infinite Test Runner
 
 on:
-  push:
-    branches:
-      - main
+  schedule:
+    - cron: '*/15 * * * *'  # Каждые 5 минут
 
 permissions:
   contents: read
@@ -72,20 +71,8 @@ jobs:
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v4
       - name: Run tests infinitely
-        run: |
-          while :; do
-            echo "### Starting test iteration ###" >> test.log
-            pytest -m smoke --alluredir=results >> test.log 2>&1 || echo "Tests failed, but continuing..." >> test.log
-            sleep 10  # Пауза между запусками
-          done
+        run: pytest -m smoke --alluredir=results
         continue-on-error: true
-      - name: Upload test logs
-        if: always()  # Загружает логи даже при ошибке
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-logs
-          path: test.log
-          retention-days: 1
       - name: Store allure results
         uses: actions/upload-artifact@v4
         with:
