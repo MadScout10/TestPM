@@ -115,3 +115,9 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4.0.5
+      - name: Send notification
+        run: |
+          curl --location 'https://api.telegram.org/bot${{ secrets.TGBOT_TOKEN }}/sendMessage' \
+          --header 'Content-Type: application/json' \
+          --data '{"chat_id": 5218102733,"text": "🦾Прогон, запущенный автоматически завершен. Посмотреть результат: https://madscout10.github.io/TestPM/#"}'      
+          
