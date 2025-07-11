@@ -112,6 +112,20 @@ jobs:
         if: "github.event.inputs.deployment_target == 'test700 regression_tests'"
         run: pytest -m regression --stage http://m.testpm.ru:700/ --alluredir=results
         continue-on-error: true
+      - name: Prepare Telegram report
+        run: |
+          mkdir -p telegram_report
+          # Копируем только свежие результаты
+          find results -name "*result.*" -mmin -5 -exec cp {} telegram_report/ \;
+          # Копируем историю из нестандартного расположения
+          [ -d pages_history/history ] && cp -r pages_history/history telegram_report/
+          [ -d results/history ] && cp -r results/history telegram_report/
+      - name: Send Telegram Notification
+        run: python ./send_report.py
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TGBOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TGCHATID }}
+          ALLURE_REPORT_URL: "https://madscout10.github.io/TestPM/#"
       - name: Store allure results
         uses: actions/upload-artifact@v4
         with:
@@ -142,36 +156,6 @@ jobs:
             _site
           retention-days: 1
 
-  send-telegram-report:
-    needs: [test, generate-report]  # Зависит от выполнения тестов и генерации отчета
-    runs-on: ubuntu-latest
-    name: Send Telegram Notification
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-      - name: Download allure results
-        uses: actions/download-artifact@v4
-        with:
-          name: results
-          path: results
-      - name: Verify results
-        run: |
-          echo "Содержимое папки results:"
-          ls -la results/
-          [ "$(ls -A results)" ] || { echo "ОШИБКА: Нет файлов с результатами!"; exit 1; }
-      - name: Send report
-        run: python ./send_report.py --run-id ${{ github.run_id }} --results-dir results
-        env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TGBOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TGCHATID }}
-          ALLURE_REPORT_URL: "https://madscout10.github.io/TestPM/#"
-          
   publish-report:
     runs-on: ubuntu-latest
     needs: generate-report
@@ -184,4 +168,4 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4.0.5
-
+        
