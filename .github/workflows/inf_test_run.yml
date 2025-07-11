@@ -1,8 +1,8 @@
 name: Infinite Test Runner
 
-on:
-  schedule:
-    - cron: '*/20 * * * *'  # Каждые n минут
+#on:
+  #schedule:
+    #- cron: '*/20 * * * *'  # Каждые n минут
           
 permissions:
   contents: read
