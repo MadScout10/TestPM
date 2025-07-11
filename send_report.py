@@ -7,8 +7,6 @@ import asyncio
 import os
 
 def parse_allure_results(results_dir="results"):
-    CURRENT_TIME = time.time()  # Фиксируем текущее время
-    
     stats = {
         "passed": 0,
         "failed": 0,
@@ -16,32 +14,35 @@ def parse_allure_results(results_dir="results"):
         "skipped": 0,
         "total": 0
     }
-
-    # Максимальный возраст файлов (в секундах)
-    MAX_FILE_AGE = 600  # 10 минут
-    
-    for result_file in Path(results_dir).glob("*result.*"):
+    # Получаем только свежие файлы текущего прогона
+    current_run_files = set()
+    # 1. Сначала находим все файлы attachments (они ссылаются на тесты)
+    for attachment in Path(results_dir).glob("*attachment*"):
         try:
-            file_age = CURRENT_TIME - result_file.stat().st_mtime
-            
-            if file_age > MAX_FILE_AGE:
-                print(f"Пропускаем старый файл: {result_file.name} ({file_age:.0f} сек.)")
-                continue
-                
-            with open(result_file, "r", encoding="utf-8") as f:
-                data = json.load(f) if result_file.suffix == ".json" else yaml.safe_load(f)
-                
-                status = data.get("status", "").lower()
-                if status in stats:
-                    stats[status] += 1
-                    stats["total"] += 1
+            with open(attachment, "r") as f:
+                data = json.load(f)
+                if "source" in data:
+                    current_run_files.add(data["source"])
+        except:
+            continue
+    # 2. Анализируем только связанные с текущим прогоном файлы
+    for result_file in Path(results_dir).glob("*result.*"):
+        if str(result_file.name) in current_run_files or not current_run_files:
+            try:
+                with open(result_file, "r", encoding="utf-8") as f:
+                    data = json.load(f) if result_file.suffix == ".json" else yaml.safe_load(f)
                     
-        except Exception as e:
-            print(f"Ошибка при обработке {result_file}: {str(e)}")
+                    status = data.get("status", "").lower()
+                    if status in stats:
+                        stats[status] += 1
+                        stats["total"] += 1
+                        
+            except Exception as e:
+                print(f"Ошибка при обработке {result_file}: {str(e)}")
 
     stats["success_rate"] = (stats["passed"] / stats["total"] * 100) if stats["total"] > 0 else 0
     return stats
-
+    
 async def send_telegram_report(token, chat_id, report, report_url=None):
     bot = Bot(token=token)
     message = (
