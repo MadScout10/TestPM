@@ -52,8 +52,8 @@ if __name__ == "__main__":
     report = parse_allure_results()
     asyncio.run(
         send_telegram_report(
-            os.getenv("TGBOT_TOKEN"),
-            os.getenv("TGCHATID"),
+            os.getenv("TELEGRAM_BOT_TOKEN"),
+            os.getenv("TELEGRAM_CHAT_ID"),
             report
         )
     )
