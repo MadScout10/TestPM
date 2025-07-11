@@ -47,7 +47,7 @@ async def send_telegram_report(token, chat_id, report, report_url=None):
     bot = Bot(token=token)
     message = (
         "Привет, работяги)\n"
-        "📊 Результаты ПОСЛЕДНЕГО прогона\n"
+        "📊 Результаты прогона(ручной)\n"
         f"✅ Успешно: {report['passed']}\n"
         f"❌ Упавшие: {report['failed']}\n"
         f"⚠️ Проблемные: {report['broken']}\n"
