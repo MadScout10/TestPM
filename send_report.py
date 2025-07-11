@@ -4,25 +4,31 @@ from telegram import Bot
 import asyncio
 import os
 
-def parse_allure_results(results_dir="allure-results"):
+def parse_allure_results(results_dir="results"):
     passed = failed = broken = skipped = total = 0
-
-    for result_file in Path(results_dir).glob("*-result.yaml"):
-        with open(result_file, "r", encoding="utf-8") as f:
-            data = yaml.safe_load(f)
-        
-        status = data.get("status", "unknown")
-        
-        if status == "passed":
-            passed += 1
-        elif status == "failed":
-            failed += 1
-        elif status == "broken":
-            broken += 1
-        elif status == "skipped":
-            skipped += 1
-        total += 1
-
+    
+    for result_file in Path(results_dir).glob("*result.*"):  # Ищет и .yaml, и .json
+        try:
+            with open(result_file, "r", encoding="utf-8") as f:
+                if result_file.suffix == ".json":
+                    data = json.load(f)
+                else:
+                    data = yaml.safe_load(f)
+                
+                status = data.get("status", "unknown").lower()
+                
+                if status == "passed":
+                    passed += 1
+                elif status == "failed":
+                    failed += 1
+                elif status == "broken":
+                    broken += 1
+                elif status == "skipped":
+                    skipped += 1
+                total += 1
+        except Exception as e:
+            print(f"Ошибка при обработке {result_file}: {str(e)}")
+    
     return {
         "passed": passed,
         "failed": failed,
