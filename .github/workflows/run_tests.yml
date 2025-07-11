@@ -141,6 +141,8 @@ jobs:
           path:
             _site
           retention-days: 1
+      - name: Checkout repository
+        uses: actions/checkout@v4
       - name: Send Telegram Notification
         working-directory: ${{ github.workspace }}  # Правильное указание рабочей директории
         run: |
