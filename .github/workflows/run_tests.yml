@@ -141,15 +141,15 @@ jobs:
           path:
             _site
           retention-days: 1
-      - name: Send Telegram Notification (With Report Link)
+      - name: Send Telegram Notification
+        working-directory: ${{ github.workspace }}  # Правильное указание рабочей директории
         run: |
-          python send_report.py
-          echo "View full report: https://madscout10.github.io/TestPM/#"  # Пример ссылки
+          python ./send_report.py
+          echo "View full report: https://madscout10.github.io/TestPM/#"
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          ALLURE_REPORT_URL: "https://madscout10.github.io/TestPM/#"  # Передаем в скрипт
-          working-directory: /home/runner/work/TestPM/
+          ALLURE_REPORT_URL: "https://madscout10.github.io/TestPM/#"
           
   publish-report:
     runs-on: ubuntu-latest
