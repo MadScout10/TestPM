@@ -154,10 +154,11 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4.0.5
-      - name: Send Test Results to Telegram
+      - name: Send Telegram Notification (With Report Link)
         run: |
-          python .send_report.py
+          python send_report.py
+          echo "View full report: https://madscout10.github.io/TestPM/#"  # Пример ссылки
         env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TGBOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TGCHATID }}
-        
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          ALLURE_REPORT_URL: "https://madscout10.github.io/TestPM/#"  # Передаем в скрипт
