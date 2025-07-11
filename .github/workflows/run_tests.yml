@@ -141,8 +141,15 @@ jobs:
           path:
             _site
           retention-days: 1
+      # Отправка сообщения в тг:    
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
       - name: Send Telegram Notification
         working-directory: ${{ github.workspace }}  # Правильное указание рабочей директории
         run: |
