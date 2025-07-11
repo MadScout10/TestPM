@@ -6,29 +6,23 @@ import os
 
 def parse_allure_results(results_dir="results"):
     passed = failed = broken = skipped = total = 0
-    
-    for result_file in Path(results_dir).glob("*result.*"):  # Ищет и .yaml, и .json
-        try:
-            with open(result_file, "r", encoding="utf-8") as f:
-                if result_file.suffix == ".json":
-                    data = json.load(f)
-                else:
-                    data = yaml.safe_load(f)
-                
-                status = data.get("status", "unknown").lower()
-                
-                if status == "passed":
-                    passed += 1
-                elif status == "failed":
-                    failed += 1
-                elif status == "broken":
-                    broken += 1
-                elif status == "skipped":
-                    skipped += 1
-                total += 1
-        except Exception as e:
-            print(f"Ошибка при обработке {result_file}: {str(e)}")
-    
+
+    for result_file in Path(results_dir).glob("*-result.yaml"):
+        with open(result_file, "r", encoding="utf-8") as f:
+            data = yaml.safe_load(f)
+        
+        status = data.get("status", "unknown")
+        
+        if status == "passed":
+            passed += 1
+        elif status == "failed":
+            failed += 1
+        elif status == "broken":
+            broken += 1
+        elif status == "skipped":
+            skipped += 1
+        total += 1
+
     return {
         "passed": passed,
         "failed": failed,
@@ -41,7 +35,8 @@ def parse_allure_results(results_dir="results"):
 async def send_telegram_report(token, chat_id, report, report_url=None):
     bot = Bot(token=token)
     message = (
-        "📊 *Test Results Report*\n"
+        "Привет, работяги)"
+        f"📊 *Test Results Report*\n"
         f"✅ Passed: {report['passed']}\n"
         f"❌ Failed: {report['failed']}\n"
         f"⚠️ Broken: {report['broken']}\n"
@@ -57,9 +52,8 @@ if __name__ == "__main__":
     report = parse_allure_results()
     asyncio.run(
         send_telegram_report(
-            os.getenv("TELEGRAM_BOT_TOKEN"),
-            os.getenv("TELEGRAM_CHAT_ID"),
+            os.getenv("TGBOT_TOKEN"),
+            os.getenv("TGCHATID"),
             report
         )
     )
-    
