@@ -166,7 +166,7 @@ jobs:
           ls -la results/
           [ "$(ls -A results)" ] || { echo "ОШИБКА: Нет файлов с результатами!"; exit 1; }
       - name: Send report
-        run: python send_report.py --run-id ${{ github.run_id }}
+        run: python ./send_report.py --run-id ${{ github.run_id }} --results-dir results
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TGBOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TGCHATID }}
