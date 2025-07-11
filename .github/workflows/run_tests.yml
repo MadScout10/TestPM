@@ -143,26 +143,34 @@ jobs:
           retention-days: 1
 
   send-telegram-report:
-    needs: [test, generate-report]
+    needs: [test, generate-report]  # Зависит от выполнения тестов и генерации отчета
     runs-on: ubuntu-latest
-    if: always()  # Отправлять даже при неудачных тестах
+    name: Send Telegram Notification
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
           python-version: '3.10'
       - name: Install dependencies
         run: pip install -r requirements.txt
-      - uses: actions/download-artifact@v4
+      - name: Download allure results
+        uses: actions/download-artifact@v4
         with:
           name: results
           path: results
-      - run: python send_report.py
+      - name: Verify results
+        run: |
+          echo "Содержимое папки results:"
+          ls -la results/
+          [ "$(ls -A results)" ] || { echo "ОШИБКА: Нет файлов с результатами!"; exit 1; }
+      - name: Send report
+        run: python send_report.py
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TGBOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TGCHATID }}
           ALLURE_REPORT_URL: "https://madscout10.github.io/TestPM/#"
-          GITHUB_RUN_STATUS: ${{ job.status }}  # Передаем статус выполнения
           
   publish-report:
     runs-on: ubuntu-latest
