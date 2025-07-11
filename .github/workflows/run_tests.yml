@@ -141,6 +141,14 @@ jobs:
           path:
             _site
           retention-days: 1
+      - name: Send Telegram Notification (With Report Link)
+        run: |
+          python send_report.py
+          echo "View full report: https://madscout10.github.io/TestPM/#"  # Пример ссылки
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          ALLURE_REPORT_URL: "https://madscout10.github.io/TestPM/#"  # Передаем в скрипт
           
   publish-report:
     runs-on: ubuntu-latest
@@ -154,11 +162,4 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4.0.5
-      - name: Send Telegram Notification (With Report Link)
-        run: |
-          python send_report.py
-          echo "View full report: https://madscout10.github.io/TestPM/#"  # Пример ссылки
-        env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          ALLURE_REPORT_URL: "https://madscout10.github.io/TestPM/#"  # Передаем в скрипт
+
