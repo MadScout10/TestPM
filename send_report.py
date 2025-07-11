@@ -7,7 +7,7 @@ import asyncio
 import os
 
 def parse_allure_results(results_dir="results"):
-    print(f"\nАнализируем ТОЛЬКО ПОСЛЕДНИЙ прогон в {results_dir}...")
+    CURRENT_TIME = time.time()  # Фиксируем текущее время
     
     stats = {
         "passed": 0,
@@ -17,24 +17,17 @@ def parse_allure_results(results_dir="results"):
         "total": 0
     }
 
-    # Получаем только самые свежие файлы (сортировка по времени изменения)
-    result_files = sorted(
-        Path(results_dir).glob("*result.*"),
-        key=lambda f: f.stat().st_mtime,
-        reverse=True  # Сначала самые новые
-    )
-
-    if not result_files:
-        return {"error": "No result files found"}
-
-    # Берем только файлы, созданные в последние 10 минут
-    latest_files = [
-        f for f in result_files
-        if time.time() - f.stat().st_mtime < 600
-    ]
-
-    for result_file in latest_files:
+    # Максимальный возраст файлов (в секундах)
+    MAX_FILE_AGE = 600  # 10 минут
+    
+    for result_file in Path(results_dir).glob("*result.*"):
         try:
+            file_age = CURRENT_TIME - result_file.stat().st_mtime
+            
+            if file_age > MAX_FILE_AGE:
+                print(f"Пропускаем старый файл: {result_file.name} ({file_age:.0f} сек.)")
+                continue
+                
             with open(result_file, "r", encoding="utf-8") as f:
                 data = json.load(f) if result_file.suffix == ".json" else yaml.safe_load(f)
                 
@@ -42,7 +35,7 @@ def parse_allure_results(results_dir="results"):
                 if status in stats:
                     stats[status] += 1
                     stats["total"] += 1
-
+                    
         except Exception as e:
             print(f"Ошибка при обработке {result_file}: {str(e)}")
 
@@ -53,13 +46,13 @@ async def send_telegram_report(token, chat_id, report, report_url=None):
     bot = Bot(token=token)
     message = (
         "Привет, работяги)\n"
-        f"📊 *Test Results Report*\n"
-        f"✅ Passed: {report['passed']}\n"
-        f"❌ Failed: {report['failed']}\n"
-        f"⚠️ Broken: {report['broken']}\n"
-        f"⏭ Skipped: {report['skipped']}\n"
-        f"🔢 Total: {report['total']}\n"
-        f"📈 Success Rate: {report['success_rate']:.2f}%"
+        "📊 Результаты ПОСЛЕДНЕГО прогона\n"
+        f"✅ Успешно: {report['passed']}\n"
+        f"❌ Упавшие: {report['failed']}\n"
+        f"⚠️ Проблемные: {report['broken']}\n"
+        f"⏩ Пропущенные: {report['skipped']}\n"
+        f"🔢 Всего тестов: {report['total']}\n"
+        f"📈 Успешность: {report['success_rate']:.2f}%"
     )
     if report_url:
         message += f"\n📄 [View Full Report]({report_url})"
