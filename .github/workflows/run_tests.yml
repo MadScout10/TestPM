@@ -144,7 +144,7 @@ jobs:
       - name: Send Telegram Notification
         working-directory: ${{ github.workspace }}  # Правильное указание рабочей директории
         run: |
-          python ./send_report.py
+          python send_report.py
           echo "View full report: https://madscout10.github.io/TestPM/#"
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
