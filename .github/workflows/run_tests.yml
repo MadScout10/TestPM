@@ -156,7 +156,7 @@ jobs:
         uses: actions/deploy-pages@v4.0.5
       - name: Send Test Results to Telegram
         run: |
-          python send_report.py
+          python .send_report.py
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TGBOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TGCHATID }}
