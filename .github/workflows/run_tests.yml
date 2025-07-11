@@ -158,5 +158,5 @@ jobs:
         run: |
           curl --location 'https://api.telegram.org/bot${{ secrets.TGBOT_TOKEN }}/sendMessage' \
           --header 'Content-Type: application/json' \
-          --data '{"chat_id": 5218102733,"text": "💡Прогон, запущенный вручную завершен. Посмотреть результат: https://madscout10.github.io/TestPM/#"}'
+          --data '{"chat_id": -4607519873,"text": "💡Прогон, запущенный вручную завершен. Посмотреть результат: https://madscout10.github.io/TestPM/#"}'
         
