@@ -120,15 +120,6 @@ jobs:
             results
           overwrite: true
           retention-days: 1
-      - name: Send Telegram Notification
-        working-directory: ${{ github.workspace }}  # Правильное указание рабочей директории
-        run: |
-          python send_report.py
-          echo "View full report: https://madscout10.github.io/TestPM/#"
-        env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TGBOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TGCHATID }}
-          ALLURE_REPORT_URL: "https://madscout10.github.io/TestPM/#"
         
   generate-report:
     runs-on: ubuntu-latest
@@ -150,6 +141,17 @@ jobs:
           path:
             _site
           retention-days: 1
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Send Telegram Notification
+        working-directory: ${{ github.workspace }}  # Правильное указание рабочей директории
+        run: |
+          python send_report.py
+          echo "View full report: https://madscout10.github.io/TestPM/#"
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TGBOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TGCHATID }}
+          ALLURE_REPORT_URL: "https://madscout10.github.io/TestPM/#"
           
   publish-report:
     runs-on: ubuntu-latest
