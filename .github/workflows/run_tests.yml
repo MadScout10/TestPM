@@ -154,9 +154,10 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4.0.5
-      - name: Send notification
+      - name: Send Test Results to Telegram
         run: |
-          curl --location 'https://api.telegram.org/bot${{ secrets.TGBOT_TOKEN }}/sendMessage' \
-          --header 'Content-Type: application/json' \
-          --data '{"chat_id": -4607519873,"text": "💡Прогон, запущенный вручную завершен. Посмотреть результат: https://madscout10.github.io/TestPM/#"}'
+          python send_report.py
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TGBOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TGCHATID }}
         
