@@ -143,7 +143,7 @@ jobs:
           retention-days: 1
       - name: Send Telegram Notification (With Report Link)
         run: |
-          python send_report.py
+          python ./send_report.py
           echo "View full report: https://madscout10.github.io/TestPM/#"  # Пример ссылки
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
