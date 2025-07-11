@@ -149,6 +149,7 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           ALLURE_REPORT_URL: "https://madscout10.github.io/TestPM/#"  # Передаем в скрипт
+          working-directory: /home/runner/work/TestPM/
           
   publish-report:
     runs-on: ubuntu-latest
