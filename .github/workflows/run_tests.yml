@@ -118,6 +118,11 @@ jobs:
           mkdir -p telegram_temp
           # Копируем только свежие результаты (исключаем history)
           find results -name "*result.*" ! -path "*history*" -exec cp {} telegram_temp/ \;
+      - name: Verify Telegram data
+        run: |
+          echo "Файлы для Telegram:"
+          find telegram_temp -type f
+          [ "$(find telegram_temp -type f | wc -l)" -gt 0 ] || exit 1
       - name: Send Telegram Notification
         run: python ./send_report.py
         env:
