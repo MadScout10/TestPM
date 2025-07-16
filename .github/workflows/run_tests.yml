@@ -63,8 +63,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: results
-          path:
-            results
+          path: results
           retention-days: 1
 
   test:
@@ -81,9 +80,18 @@ jobs:
       - name: Install Chrome
         run: sudo apt-get install google-chrome-stable
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          pip install -r requirements.txt
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v4
+      
+      # Очистка перед запуском тестов
+      - name: Clean previous results
+        run: |
+          rm -rf results/*
+          [ -d pages_history ] && rm -rf pages_history/history/
+      
+      # Запуск тестов
       - name: conftest
         if: "github.event.inputs.deployment_target == 'conftest'"
         run: pytest -m new --alluredir=results
@@ -112,29 +120,43 @@ jobs:
         if: "github.event.inputs.deployment_target == 'test700 regression_tests'"
         run: pytest -m regression --stage http://m.testpm.ru:700/ --alluredir=results
         continue-on-error: true
+      
+      # Подготовка Telegram-отчета
       - name: Prepare Telegram report
         run: |
-          # Создаем чистую папку для Telegram
+          # Создаем чистую папку
           mkdir -p telegram_temp
-          # Копируем только свежие результаты (исключаем history)
-          find results -name "*result.*" ! -path "*history*" -exec cp {} telegram_temp/ \;
-      - name: Verify Telegram data
+          
+          # Копируем только свежие результаты (не старше 2 минут)
+          find results -name "*-result.*" -mmin -2 ! -path "*history*" -exec cp {} telegram_temp/ \;
+          
+          # Проверяем наличие файлов
+          if [ -z "$(ls -A telegram_temp)" ]; then
+            echo "Нет свежих результатов для Telegram!"
+            exit 1
+          fi
+      
+      # Проверка изоляции
+      - name: Verify Telegram data isolation
         run: |
-          echo "Файлы для Telegram:"
-          find telegram_temp -type f
-          [ "$(find telegram_temp -type f | wc -l)" -gt 0 ] || exit 1
+          echo "Проверка изоляции:"
+          find telegram_temp -type f | grep -q "history" && (echo "Обнаружена история!"; exit 1)
+          [ "$(find telegram_temp -type f | wc -l)" -gt 0 ] || (echo "Нет данных"; exit 1)
+      
+      # Отправка в Telegram
       - name: Send Telegram Notification
         run: python ./send_report.py
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TGBOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TGCHATID }}
           ALLURE_REPORT_URL: "https://madscout10.github.io/TestPM/#"
+      
+      # Сохранение результатов
       - name: Store allure results
         uses: actions/upload-artifact@v4
         with:
           name: results
-          path:
-            results
+          path: results
           overwrite: true
           retention-days: 1
         
@@ -155,8 +177,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: _site
-          path:
-            _site
+          path: _site
           retention-days: 1
 
   publish-report:
