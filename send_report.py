@@ -4,24 +4,21 @@ from telegram import Bot
 import asyncio
 import os
 
-def parse_fresh_results(results_dir="results"):
-    """Анализирует только свежие результаты, игнорируя историю"""
+def parse_isolated_results(report_dir="telegram_report"):
     stats = {"passed": 0, "failed": 0, "broken": 0, "skipped": 0, "total": 0}
     
-    for result_file in Path(results_dir).glob("*result.*"):
-        # Явно исключаем файлы из папки history
-        if "history" not in str(result_file):
-            try:
-                with open(result_file, 'r', encoding='utf-8') as f:
-                    data = json.load(f)
-                    status = data.get("status", "").lower()
-                    if status in stats:
-                        stats[status] += 1
-                        stats["total"] += 1
-            except Exception as e:
-                print(f"Ошибка обработки {result_file}: {str(e)}")
+    # Анализируем только файлы в указанной папке
+    for result_file in Path(report_dir).glob("*-result.*"):
+        try:
+            with open(result_file, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                status = data.get("status", "").lower()
+                if status in stats:
+                    stats[status] += 1
+                    stats["total"] += 1
+        except Exception as e:
+            print(f"Ошибка обработки {result_file}: {str(e)}")
     
-    stats["success_rate"] = (stats["passed"] / stats["total"] * 100) if stats["total"] > 0 else 0
     return stats
 
 async def send_telegram_report(token, chat_id, report):
