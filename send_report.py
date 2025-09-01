@@ -34,7 +34,7 @@ async def send_telegram_report(token, chat_id, report):
     )
     await bot.send_message(chat_id=chat_id, text=message)
 
-if __name__ == "__main__":
+if __name__ == "__main__" and broken != 0 and failed != 0:
     report = parse_fresh_results()
     asyncio.run(send_telegram_report(
         os.getenv("TELEGRAM_BOT_TOKEN"),
