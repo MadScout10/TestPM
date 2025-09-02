@@ -4,22 +4,30 @@ from pathlib import Path
 from telegram import Bot
 import asyncio
 
-def parse_fresh_results(results_dir="telegram_temp"):
-    """Анализирует результаты и возвращает статистику"""
-    stats = {"passed": 0, "failed": 0, "broken": 0, "skipped": 0, "total": 0}
+def parse_allure_results(results_dir="results"):
+    """Анализирует ВСЕ результаты из основной папки"""
+    stats = {"passed": 0, "failed": 0, "broken": 0, "skipped": 0, "total": 0, "xfailed": 0}
     
+    # Анализируем все файлы в основной папке results
     for result_file in Path(results_dir).glob("*-result.*"):
         try:
             with open(result_file, 'r', encoding='utf-8') as f:
                 data = json.load(f)
                 status = data.get("status", "").lower()
-                if status in stats:
+                
+                # Обрабатываем xfailed (expected failure)
+                if status == "skipped" and data.get("name", "").lower().startswith("xfail"):
+                    stats["xfailed"] += 1
+                    stats["skipped"] += 1
+                elif status in stats:
                     stats[status] += 1
-                    stats["total"] += 1
+                
+                stats["total"] += 1
+                
         except Exception as e:
             print(f"Ошибка обработки {result_file}: {str(e)}")
     
-    stats["success_rate"] = (stats["passed"] / stats["total"] * 100) if stats["total"] > 0 else 0
+    stats["success_rate"] = (stats["passed"] / (stats["total"] - stats["xfailed"]) * 100) if (stats["total"] - stats["xfailed"]) > 0 else 0
     return stats
 
 def should_send_notification(report):
@@ -54,24 +62,18 @@ async def send_telegram_report(token, chat_id, report, report_url=None):
         f"📈 Успешность: {report['success_rate']:.2f}%"
     )
     
+    # Добавляем информацию о xfailed, если есть
+    if report.get("xfailed", 0) > 0:
+        message += f"\n🔶 Ожидаемые падения: {report['xfailed']}"
+    
     if report_url:
         message += f"\n\n📄 Отчет: {report_url}"
     
     await bot.send_message(chat_id=chat_id, text=message)
 
-async def send_success_notification(token, chat_id, report_url=None):
-    """Отправляет краткое уведомление об успешном прогоне (опционально)"""
-    bot = Bot(token=token)
-    message = "✅ Все тесты прошли успешно!"
-    if report_url:
-        message += f"\n📄 Отчет: {report_url}"
-    
-    # Раскомментируйте следующую строку, если хотите получать уведомления об успешных прогонах
-    # await bot.send_message(chat_id=chat_id, text=message)
-
 if __name__ == "__main__":
-    print("Анализ результатов тестов...")
-    report = parse_fresh_results()
+    print("Анализ результатов тестов из папки results...")
+    report = parse_allure_results("results")  # Анализируем основную папку!
     print(f"Результаты: {report}")
     
     if should_send_notification(report):
