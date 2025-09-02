@@ -4,41 +4,32 @@ from telegram import Bot
 import asyncio
 
 def parse_junit_xml(xml_file="test-results.xml"):
-    """Парсит JUnit XML отчет (последний запуск перезаписывает предыдущий)"""
-    stats = {"passed": 0, "failed": 0, "skipped": 0, "errors": 0, "xfailed": 0, "total": 0}
-    
-    if not os.path.exists(xml_file):
-        return {"error": "JUnit XML отчет не найден"}
+    """Парсит JUnit XML отчет"""
+    stats = {"passed": 0, "failed": 0, "skipped": 0, "errors": 0, "total": 0}
     
     try:
         tree = ET.parse(xml_file)
         root = tree.getroot()
         
-        # Получаем общую статистику
-        stats["total"] = int(root.get('tests', 0))
+        # Получаем атрибуты из корневого элемента
         stats["passed"] = int(root.get('passed', 0))
         stats["failed"] = int(root.get('failed', 0))
         stats["skipped"] = int(root.get('skipped', 0))
         stats["errors"] = int(root.get('errors', 0))
+        stats["total"] = int(root.get('tests', 0))
         
-        # Считаем xfailed
+        # Считаем xfailed отдельно
+        stats["xfailed"] = 0
         for testcase in root.findall('.//testcase'):
-            skip_node = testcase.find('skipped')
-            if skip_node is not None:
-                message = skip_node.get('message', '').lower()
-                if 'xfail' in message or 'expected fail' in message:
+            if testcase.find('skipped') is not None:
+                message = testcase.find('skipped').get('message', '')
+                if 'xfail' in message.lower():
                     stats["xfailed"] += 1
-        
-        # Корректируем skipped (исключаем xfailed)
-        stats["skipped"] = max(0, stats["skipped"] - stats["xfailed"])
         
     except Exception as e:
         return {"error": f"Ошибка парсинга XML: {str(e)}"}
     
-    # Успешность считаем на основе выполненных тестов
-    executed_tests = stats["passed"] + stats["failed"] + stats["errors"]
-    stats["success_rate"] = (stats["passed"] / executed_tests * 100) if executed_tests > 0 else 0
-    
+    stats["success_rate"] = (stats["passed"] / stats["total"] * 100) if stats["total"] > 0 else 0
     return stats
 
 async def send_telegram_report(token, chat_id, report):
