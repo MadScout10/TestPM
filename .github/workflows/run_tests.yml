@@ -26,6 +26,7 @@ jobs:
   download-history:
     runs-on: ubuntu-latest
     name: Download history
+    continue-on-error: true
     steps:
       - name: setup Python
         uses: actions/setup-python@v4
