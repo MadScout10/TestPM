@@ -26,7 +26,6 @@ jobs:
   download-history:
     runs-on: ubuntu-latest
     name: Download history
-    continue-on-error: true
     steps:
       - name: setup Python
         uses: actions/setup-python@v4
@@ -69,8 +68,7 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    needs: download-history
-    continue-on-error: true
+    # needs: download-history
 
     steps:
       - name: Checkout repository
@@ -97,24 +95,31 @@ jobs:
       - name: conftest
         if: "github.event.inputs.deployment_target == 'conftest'"
         run: pytest -m new --alluredir=results
+        continue-on-error: true
       - name: smoke_tests
         if: "github.event.inputs.deployment_target == 'smoke_tests'"
         run: pytest -m smoke --alluredir=results
+        continue-on-error: true
       - name: regression_tests
         if: "github.event.inputs.deployment_target == 'regression_tests'"
         run: pytest -m regression --alluredir=results
+        continue-on-error: true
       - name: pb1 smoke_tests
         if: "github.event.inputs.deployment_target == 'pb1 smoke_tests'"
         run: pytest -m smoke --stage https://pm.ru/user/switch_platform/?platform=2 --alluredir=results
+        continue-on-error: true
       - name: pb1 regression_tests
         if: "github.event.inputs.deployment_target == 'pb1 regression_tests'"
         run: pytest -m regression --stage https://pm.ru/user/switch_platform/?platform=2 --alluredir=results
+        continue-on-error: true
       - name: test700 smoke_tests
         if: "github.event.inputs.deployment_target == 'test700 smoke_tests'"
         run: pytest -m smoke --stage http://m.testpm.ru:700/ --alluredir=results
+        continue-on-error: true
       - name: test700 regression_tests
         if: "github.event.inputs.deployment_target == 'test700 regression_tests'"
         run: pytest -m regression --stage http://m.testpm.ru:700/ --alluredir=results
+        continue-on-error: true
       
       # Подготовка Telegram-отчета
       - name: Prepare Telegram report
