@@ -1,4 +1,5 @@
 import os
+import re
 from telegram import Bot
 import asyncio
 
@@ -61,14 +62,17 @@ def parse_pytest_content(content):
     
     return stats
 
+def should_send_notification(report):
+    """Определяет, нужно ли отправлять уведомление"""
+    # Отправляем только если есть упавшие тесты
+    return report.get("failed", 0) > 0
+
 async def send_telegram_report(token, chat_id, report):
     """Отправляет уведомление в Telegram"""
     bot = Bot(token=token)
     
     if "error" in report:
         message = f"❌ Ошибка парсинга: {report['error']}"
-    elif {report['failed']} == 0:
-        brake
     else:
         message = (
             "📊 Сводка всех тестов\n"
@@ -82,13 +86,29 @@ async def send_telegram_report(token, chat_id, report):
     
     await bot.send_message(chat_id=chat_id, text=message)
 
+async def send_success_notification(token, chat_id):
+    """Отправляет краткое уведомление об успешном прогоне (опционально)"""
+    bot = Bot(token=token)
+    message = "✅ Все тесты прошли успешно! Нет упавших тестов."
+    # Раскомментируйте следующую строку, если хотите получать уведомления об успешных прогонах
+    # await bot.send_message(chat_id=chat_id, text=message)
+
 if __name__ == "__main__":
     print("Парсинг логов pytest...")
     report, content = parse_pytest_log()
     print(f"Результаты: {report}")
     
-    asyncio.run(send_telegram_report(
-        os.getenv("TELEGRAM_BOT_TOKEN"),
-        os.getenv("TELEGRAM_CHAT_ID"),
-        report
-    ))
+    if should_send_notification(report):
+        print("Обнаружены упавшие тесты - отправляем уведомление")
+        asyncio.run(send_telegram_report(
+            os.getenv("TELEGRAM_BOT_TOKEN"),
+            os.getenv("TELEGRAM_CHAT_ID"),
+            report
+        ))
+    else:
+        print("Нет упавших тестов - уведомление не отправляется")
+        # Раскомментируйте для отправки успешных уведомлений:
+        # asyncio.run(send_success_notification(
+        #     os.getenv("TELEGRAM_BOT_TOKEN"),
+        #     os.getenv("TELEGRAM_CHAT_ID")
+        # ))
