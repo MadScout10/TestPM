@@ -87,40 +87,42 @@ jobs:
         
       - name: conftest
         if: "github.event.inputs.deployment_target == 'conftest'"
-        run: pytest -m new --alluredir=results
+        run: pytest -m new --alluredir=results --tb=short --no-header -q | tee -a pytest_output.log
         continue-on-error: true
       - name: smoke_tests
         if: "github.event.inputs.deployment_target == 'smoke_tests'"
-        run: pytest -m smoke --alluredir=results
+        run: pytest -m smoke --alluredir=results --tb=short --no-header -q | tee -a pytest_output.log
         continue-on-error: true
       - name: regression_tests
         if: "github.event.inputs.deployment_target == 'regression_tests'"
-        run: pytest -m regression --alluredir=results
+        run: pytest -m regression --alluredir=results --tb=short --no-header -q | tee -a pytest_output.log
         continue-on-error: true
       - name: pb1 smoke_tests
         if: "github.event.inputs.deployment_target == 'pb1 smoke_tests'"
-        run: pytest -m smoke --stage https://pm.ru/user/switch_platform/?platform=2 --alluredir=results
+        run: pytest -m smoke --stage https://pm.ru/user/switch_platform/?platform=2 --alluredir=results --tb=short --no-header -q | tee -a pytest_output.log
         continue-on-error: true
       - name: pb1 regression_tests
         if: "github.event.inputs.deployment_target == 'pb1 regression_tests'"
-        run: pytest -m regression --stage https://pm.ru/user/switch_platform/?platform=2 --alluredir=results
+        run: pytest -m regression --stage https://pm.ru/user/switch_platform/?platform=2 --alluredir=results --tb=short --no-header -q | tee -a pytest_output.log
         continue-on-error: true
       - name: test700 smoke_tests
         if: "github.event.inputs.deployment_target == 'test700 smoke_tests'"
-        run: pytest -m smoke --stage http://m.testpm.ru:700/ --alluredir=results
+        run: pytest -m smoke --stage http://m.testpm.ru:700/ --alluredir=results --tb=short --no-header -q | tee -a pytest_output.log
         continue-on-error: true
       - name: test700 regression_tests
         if: "github.event.inputs.deployment_target == 'test700 regression_tests'"
-        run: pytest -m regression --stage http://m.testpm.ru:700/ --alluredir=results
+        run: pytest -m regression --stage http://m.testpm.ru:700/ --alluredir=results --tb=short --no-header -q | tee -a pytest_output.log
         continue-on-error: true
 
-      - name: Run tests and send report
-        run: python selenium_report.py
+      # Парсинг и отправка в тг
+      - name: Parse and send Telegram report
+        run: python parse_pytest_output.py
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TGBOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TGCHATID }}
-
-      # Сохранение результатов
+          ALLURE_REPORT_URL: "https://madscout10.github.io/TestPM/#"
+          
+      # Сохранение результатов в Allure
       - name: Store allure results
         uses: actions/upload-artifact@v4
         with:
@@ -128,6 +130,7 @@ jobs:
           path: results
           overwrite: true
           retention-days: 1
+
         
   generate-report:
     runs-on: ubuntu-latest
@@ -148,6 +151,7 @@ jobs:
           name: _site
           path: _site
           retention-days: 1
+
 
   publish-report:
     runs-on: ubuntu-latest
