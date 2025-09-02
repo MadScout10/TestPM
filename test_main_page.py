@@ -14,10 +14,13 @@ class TestsForReview:
         link = initstage
         page = MainPage(browser, link)  # инициализируем Page Object
         page.open()
+        page.basket_is_empty_mark_check() # проверяем что коорзина пуста
         page.go_to_category1()  # открываем каталог
         page.go_to_item1()  # открываем КТ
         product_page = ProductPage(browser, browser.current_url)  # инициализируем Page Object для КТ
         product_page.add_to_cart()  # добавляем товар в корзину
+        product_page.basket_is_not_empty_mark_check() # проверяем, что товар добавлен в корзину
+        product_page.check_product_name() # проверяем имя товара
         time.sleep(5)  # доп.ожидание, чтобы убедиться что все ок
 
 
