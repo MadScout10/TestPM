@@ -84,15 +84,7 @@ jobs:
           pip install -r requirements.txt
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v4
-      
-      # Безопасная очистка
-      - name: Clean previous results
-        run: |
-          [ -d results ] && rm -rf results/* || echo "Папка results не существует или пуста"
-          [ -d pages_history/history ] && rm -rf pages_history/history/ || echo "История не найдена"
-          echo "Очистка завершена успешно"
-      
-      # Запуск тестов (добавлен continue-on-error для каждого шага)
+        
       - name: conftest
         if: "github.event.inputs.deployment_target == 'conftest'"
         run: pytest -m new --alluredir=results
@@ -127,50 +119,7 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TGBOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TGCHATID }}
-      
-      # Подготовка Telegram-отчета (с улучшенной обработкой ошибок)
-      - name: Prepare Telegram report
-        run: |
-          # Создаем чистую папку
-          mkdir -p telegram_temp
-          
-          # Безопасное копирование результатов
-          if [ -d results ]; then
-            find results -name "*-result.*" -mmin -5 ! -path "*history*" -exec cp {} telegram_temp/ \; 2>/dev/null || true
-          fi
-          
-          # Проверяем наличие файлов
-          if [ -z "$(ls -A telegram_temp 2>/dev/null)" ]; then
-            echo "Предупреждение: Нет свежих результатов для Telegram!"
-            # Создаем пустой файл для избежания ошибок
-            echo '{"status": "passed"}' > telegram_temp/empty-result.json
-          else
-            echo "Найдено файлов для Telegram: $(ls -1 telegram_temp | wc -l)"
-          fi
-      
-      # Проверка изоляции (без фатальных ошибок)
-      - name: Verify Telegram data isolation
-        run: |
-          echo "Проверка изоляции:"
-          if find telegram_temp -type f 2>/dev/null | grep -q "history"; then
-            echo "Предупреждение: Обнаружена история в Telegram данных"
-          else
-            echo "История изолирована успешно"
-          fi
-          
-          if [ -z "$(find telegram_temp -type f 2>/dev/null)" ]; then
-            echo "Ошибка: Нет данных для анализа"
-            exit 1
-          fi
-      
-      # Отправка в Telegram
-      - name: Send Telegram Notification
-        run: python ./send_report.py
-        env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TGBOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TGCHATID }}
-          ALLURE_REPORT_URL: "https://madscout10.github.io/TestPM/#"
-      
+
       # Сохранение результатов
       - name: Store allure results
         uses: actions/upload-artifact@v4
