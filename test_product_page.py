@@ -23,7 +23,7 @@ class TestsSmoke:
         page.open()
         page.is_buybutton_not_present()
 
-    @pytest.mark.smoke
+    # @pytest.mark.smoke
     @allure.title("Проверка работы кнопки купить в КТ")
     def test_is_buybutton_works(self, browser, initstage):
         link = initstage + "category/mebel-dlya-doma/divany/pryamye-divany/goods-divan_oazis-id157113/"
