@@ -90,7 +90,6 @@ jobs:
         run: |
           rm -rf results/*
           [ -d pages_history ] && rm -rf pages_history/history/
-        continue-on-error: true
         
       # Запуск тестов
       - name: conftest
@@ -144,7 +143,6 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TGBOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TGCHATID }}
           ALLURE_REPORT_URL: "https://madscout10.github.io/TestPM/#"
-        continue-on-error: true
       
       # Сохранение результатов
       - name: Store allure results
