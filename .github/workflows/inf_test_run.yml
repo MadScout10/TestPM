@@ -1,9 +1,8 @@
 name: Infinite Test Runner
 
-on:
-  push:
-    branches:
-      - main
+#on:
+# schedule:
+#   - cron: '*/20 * * * *'  # Каждые 20 минут
 
 permissions:
   contents: read
@@ -51,8 +50,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: results
-          path:
-            results
+          path: results
           retention-days: 1
 
   test:
@@ -68,30 +66,36 @@ jobs:
       - name: Install Chrome
         run: sudo apt-get install google-chrome-stable
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          pip install -r requirements.txt
+          pip install python-telegram-bot==20.3 PyYAML==6.0.1
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v4
-      - name: Run tests infinitely
+      
+      # Безопасная очистка (только свежих результатов, сохраняем историю)
+      - name: Clean only fresh results
         run: |
-          while :; do
-            echo "### Starting test iteration ###" >> test.log
-            pytest -m smoke --alluredir=results >> test.log 2>&1 || echo "Tests failed, but continuing..." >> test.log
-            sleep 10  # Пауза между запусками
-          done
+          # Удаляем только файлы результатов, сохраняя историю
+          find results -name "*-result.*" -mmin +120 -delete 2>/dev/null || true
+          echo "Удалены старые файлы результатов (старше 2 часов)"
+      
+      - name: Run tests infinitely
+        run: pytest -m smoke --alluredir=results
         continue-on-error: true
-      - name: Upload test logs
-        if: always()  # Загружает логи даже при ошибке
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-logs
-          path: test.log
-          retention-days: 1
+      
+      # Анализ и отправка уведомления
+      - name: Analyze and send infinite report
+        run: python ./inf_send_report.py
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TGBOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TGCHATID }}
+          ALLURE_REPORT_URL: "https://madscout10.github.io/TestPM/#"
+      
       - name: Store allure results
         uses: actions/upload-artifact@v4
         with:
           name: results
-          path:
-            results
+          path: results
           overwrite: true
           retention-days: 1
 
@@ -112,8 +116,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: _site
-          path:
-            _site
+          path: _site
           retention-days: 1
 
   publish-report:
