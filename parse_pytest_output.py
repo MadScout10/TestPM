@@ -67,6 +67,8 @@ async def send_telegram_report(token, chat_id, report):
     
     if "error" in report:
         message = f"❌ Ошибка парсинга: {report['error']}"
+    elif {report['failed']} == 0:
+        brake
     else:
         message = (
             "📊 Сводка всех тестов\n"
