@@ -87,36 +87,36 @@ jobs:
         
       - name: conftest
         if: "github.event.inputs.deployment_target == 'conftest'"
-        run: pytest -m new --alluredir=results --tb=short --no-header -v | tee -a pytest_output.log
+        run: pytest -m new --alluredir=results --junitxml=test-results.xml
         continue-on-error: true
       - name: smoke_tests
         if: "github.event.inputs.deployment_target == 'smoke_tests'"
-        run: pytest -m smoke --alluredir=results --tb=short --no-header -v | tee -a pytest_output.log
+        run: pytest -m smoke --alluredir=results --junitxml=test-results.xml
         continue-on-error: true
       - name: regression_tests
         if: "github.event.inputs.deployment_target == 'regression_tests'"
-        run: pytest -m regression --alluredir=results --tb=short --no-header -v | tee -a pytest_output.log
+        run: pytest -m regression --alluredir=results --junitxml=test-results.xml
         continue-on-error: true
       - name: pb1 smoke_tests
         if: "github.event.inputs.deployment_target == 'pb1 smoke_tests'"
-        run: pytest -m smoke --stage https://pm.ru/user/switch_platform/?platform=2 --alluredir=results --tb=short --no-header -v | tee -a pytest_output.log
+        run: pytest -m smoke --stage https://pm.ru/user/switch_platform/?platform=2 --alluredir=results --junitxml=test-results.xml
         continue-on-error: true
       - name: pb1 regression_tests
         if: "github.event.inputs.deployment_target == 'pb1 regression_tests'"
-        run: pytest -m regression --stage https://pm.ru/user/switch_platform/?platform=2 --alluredir=results --tb=short --no-header -v | tee -a pytest_output.log
+        run: pytest -m regression --stage https://pm.ru/user/switch_platform/?platform=2 --alluredir=results --junitxml=test-results.xml
         continue-on-error: true
       - name: test700 smoke_tests
         if: "github.event.inputs.deployment_target == 'test700 smoke_tests'"
-        run: pytest -m smoke --stage http://m.testpm.ru:700/ --alluredir=results --tb=short --no-header -v | tee -a pytest_output.log
+        run: pytest -m smoke --stage http://m.testpm.ru:700/ --alluredir=results --tb=short --junitxml=test-results.xml
         continue-on-error: true
       - name: test700 regression_tests
         if: "github.event.inputs.deployment_target == 'test700 regression_tests'"
-        run: pytest -m regression --stage http://m.testpm.ru:700/ --alluredir=results --tb=short --no-header -v | tee -a pytest_output.log
+        run: pytest -m regression --stage http://m.testpm.ru:700/ --alluredir=results --junitxml=test-results.xml
         continue-on-error: true
 
       # Парсинг и отправка в тг
       - name: Parse and send Telegram report
-        run: python parse_pytest_output.py
+        run: python parse_junit_xml.py
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TGBOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TGCHATID }}
