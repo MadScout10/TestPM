@@ -90,7 +90,8 @@ jobs:
         run: |
           rm -rf results/*
           [ -d pages_history ] && rm -rf pages_history/history/
-      
+        continue-on-error: true
+        
       # Запуск тестов
       - name: conftest
         if: "github.event.inputs.deployment_target == 'conftest'"
