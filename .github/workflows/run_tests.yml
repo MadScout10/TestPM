@@ -121,6 +121,12 @@ jobs:
         if: "github.event.inputs.deployment_target == 'test700 regression_tests'"
         run: pytest -m regression --stage http://m.testpm.ru:700/ --alluredir=results
         continue-on-error: true
+
+      - name: Run tests and send report
+        run: python selenium_report.py
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TGBOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TGCHATID }}
       
       # Подготовка Telegram-отчета (с улучшенной обработкой ошибок)
       - name: Prepare Telegram report
