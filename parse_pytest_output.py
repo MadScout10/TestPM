@@ -72,7 +72,6 @@ async def send_telegram_report(token, chat_id, report):
             "📊 Сводка всех тестов\n"
             f"✅ Успешно: {report['passed']}\n"
             f"❌ Упавшие: {report['failed']}\n"
-            f"⏩ Пропущенные: {report['skipped']}\n"
             f"🔶 XFAIL: {report['xfailed']}\n"
             f"🔢 Всего тестов: {report['total']}\n"
             f"📈 Успешность: {report['success_rate']:.2f}%"
