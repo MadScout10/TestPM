@@ -31,7 +31,6 @@ class TestsForReview:
         cart.items_in_basket_check() # проверяем наличие товаров в корзине
         cart.collect_item_info(name, price)
 
-
     # @pytest.mark.need_review
     @allure.title('Пользователь может добавить товар в корзину')
     def test_guest_can_add_product_to_basket_fail(self, browser, initstage):
