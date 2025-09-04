@@ -29,7 +29,7 @@ class TestsForReview:
         product_page.go_to_cart_after_buybutton() #  переходим в корзину
         cart = BasketPage(browser, browser.current_url)
         cart.items_in_basket_check() # проверяем наличие товаров в корзине
-        cart.collect_item_info(name, price)
+        cart.collect_item_info(name, price) # сравниваем имя, вариант и цену с данными в корзине
 
     # @pytest.mark.need_review
     @allure.title('Пользователь может добавить товар в корзину')
