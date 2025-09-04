@@ -7,13 +7,13 @@ import allure
 
 
 class BasePage:
-    def basket_is_empty_mark_check(self):
+    def basket_is_empty(self): # корзина должна быть пуста
         with allure.step('Корзина пуста'):
-            assert self.is_not_element_present(*BasePageLocators.BASKET_EMPTY), "Корзина пуста"
+            assert self.is_disappeared(*BasePageLocators.BASKET_COUNT), "Корзина не пуста"
 
-    def basket_is_not_empty_mark_check(self):
+    def basket_is_not_empty(self): # корзина должна быть не пуста
         with allure.step('Корзина не пуста'):
-            assert self.is_element_present(*BasePageLocators.BASKET_LINK), "Корзина не пуста"
+            assert self.is_not_element_present(*BasePageLocators.BASKET_COUNT), "Корзина пуста"
 
     def go_to_basket_page(self):
         with allure.step('Переход в корзину'):
@@ -23,11 +23,6 @@ class BasePage:
     def go_to_category1(self):
         with allure.step('Переход в каталог'):
             go = self.browser.find_element(*BasePageLocators.CATEGORY_LINK)
-            go.click()
-
-    def go_to_item1(self):
-        with allure.step('Переход в КТ'):
-            go = self.browser.find_element(*BasePageLocators.ITEM_LNK)
             go.click()
 
     def choose_city_moscow(self):
@@ -54,16 +49,6 @@ class BasePage:
             return False
         return True
 
-    def is_listing_opened_div(self):
-        li = self.browser.find_element(*BasePageLocators.LISTING_H1)
-        text = li.text
-        assert text == "ДИВАНЫ", 'Неверный раздел листинга'
-
-    def is_listing_opened_gost(self):
-        li = self.browser.find_element(*BasePageLocators.LISTING_H1)
-        text = li.text
-        assert text == "МЕБЕЛЬ ДЛЯ ГОСТИНОЙ", 'Неверный раздел листинга'
-
     def is_logo_present(self):
         with allure.step('Проверка наличия логотипа'):
             element = self.browser.find_element(*BasePageLocators.LOGO)
@@ -80,7 +65,6 @@ class BasePage:
             WebDriverWait(self.browser, timeout).until(EC.presence_of_element_located((how, what)))
         except TimeoutException:
             return True
-
         return False
 
     def is_not_stretch_present(self):

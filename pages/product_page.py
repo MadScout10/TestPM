@@ -20,7 +20,7 @@ class ProductPage(BasePage):
             x = added_prod_name.text
             real_prod_name = self.browser.find_element(*ProductPageLocators.NAME_OF_PRODUCT)
             y = real_prod_name.text
-            assert x in y, 'Неверное  имя твара'
+            assert x in y, 'Неверное  имя товара'
             print('\nИмя товара проверено')
 
     def check_price(self):

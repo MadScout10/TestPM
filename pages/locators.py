@@ -2,14 +2,14 @@ from selenium.webdriver.common.by import By
 
 
 class BasePageLocators:
-    BASKET_LINK = (By.CSS_SELECTOR, "div.cart-block")
-    BASKET_EMPTY = (By.CSS_SELECTOR, "div.cart-block-info")
+    BASKET_LINK = (By.CSS_SELECTOR, "div.header__cart")
+    BASKET_COUNT = (By.CSS_SELECTOR, 'span.header__cart-count')
     CATEGORY_LINK = (By.CLASS_NAME, "header-nav__category_1")
     CHOOSE_MOSCOW = (By.CSS_SELECTOR, "div.city-modal__examples > :nth-child(1)")
     SAVE_CITY = (By.ID, "city-save")
     STRETCH = (By.ID, 'promoStretching')
     STRETCH_TIMER = (By.CLASS_NAME, 'countdown active')
-    LOGO = (By.CSS_SELECTOR, 'a.header-logo img')
+    LOGO = (By.CSS_SELECTOR, 'a.header-logo')
 
 
 class ListingPageLocators:

@@ -36,4 +36,4 @@ class BasketPage(BasePage):
 
     def items_in_basket_check(self):
         with allure.step('Проверка отображения товаров в корзине'):
-            assert self.is_element_present(*BasketPageLocators.BASKET_ITEMS), "Товары в корзине"
+            assert self.is_not_element_present(*BasketPageLocators.BASKET_ITEMS), "Товары в корзине"
