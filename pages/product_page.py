@@ -89,6 +89,15 @@ class ProductPage(BasePage):
             assert self.is_not_element_present(*ProductPageLocators.PHOTOS), \
                 "Photos is not presented"
 
+    def save_product_info(self):
+        with (allure.step('Запоминаем данные продукта')):
+            name = self.browser.find_element(*ProductPageLocators.NAME_OF_PRODUCT).text
+            variant = self.browser.find_element(*ProductPageLocators.VARIANT_OF_PRODUCT).text
+            price = self.browser.find_element(*ProductPageLocators.PRICE_OF_PRODUCT).text
+
+            return name, variant, price
+
+
     def should_not_be_success_message(self):
         assert self.is_not_element_present(*ProductPageLocators.SUCCESS_MESSAGE), \
            "Success message is presented, but should not be"

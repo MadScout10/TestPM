@@ -19,6 +19,15 @@ class BasketPage(BasePage):
         order_number = order.text
         print(' ---> ' + order_number)
 
+    def collect_item_info(self, name, price):
+        cart_name = self.browser.find_element(*BasketPageLocators.PRODNAME).text
+        cart_variant = self.browser.find_element(*BasketPageLocators.PRODVAR).text
+        cart_price = self.browser.find_element(*BasketPageLocators.PRODPRICE).text
+
+        assert cart_name.lower() in name.lower()
+        assert cart_variant.lower() in name.lower()
+        assert cart_price in price + ' ₽'
+
     def is_element_present(self, how, what):
         try:
             self.browser.find_element(how, what)

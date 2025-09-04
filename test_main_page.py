@@ -1,4 +1,5 @@
 import pytest
+from selenium.webdriver.common.by import By
 from pages.basket_page import BasketPage
 from .pages.listing_page import ListingPage
 from .pages.product_page import ProductPage
@@ -23,9 +24,13 @@ class TestsForReview:
         product_page.add_to_cart()  # добавляем товар в корзину
         product_page.basket_is_not_empty()  # проверяем, что корзина не пуста
         product_page.check_product_name() # проверяем имя товара
+        name = browser.find_element(By.CLASS_NAME, "catalog-header__title").text
+        price = browser.find_element(By.CSS_SELECTOR, "span.price-item__price span.price_no_rub").text
         product_page.go_to_cart_after_buybutton() #  переходим в корзину
         cart = BasketPage(browser, browser.current_url)
         cart.items_in_basket_check() # проверяем наличие товаров в корзине
+        cart.collect_item_info(name, price)
+
 
     # @pytest.mark.need_review
     @allure.title('Пользователь может добавить товар в корзину')
