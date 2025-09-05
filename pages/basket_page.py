@@ -28,6 +28,10 @@ class BasketPage(BasePage):
         assert cart_variant.lower() in name.lower()
         assert cart_price in price + ' ₽'
 
+    def items_in_basket_check(self):
+        with allure.step('Проверка отображения товаров в корзине'):
+            assert self.is_not_element_present(*BasketPageLocators.BASKET_ITEMS), "Товары в корзине"
+
     def is_element_present(self, how, what):
         try:
             self.browser.find_element(how, what)
@@ -40,9 +44,14 @@ class BasketPage(BasePage):
             WebDriverWait(self.browser, timeout).until(EC.presence_of_element_located((how, what)))
         except TimeoutException:
             return True
-
         return False
 
-    def items_in_basket_check(self):
-        with allure.step('Проверка отображения товаров в корзине'):
-            assert self.is_not_element_present(*BasketPageLocators.BASKET_ITEMS), "Товары в корзине"
+    # noinspection PyTypeChecker
+    def is_disappeared(self, how, what, timeout=4):
+        try:
+            WebDriverWait(self.browser, timeout, 1, TimeoutException). \
+                until_not(EC.presence_of_element_located((how, what)))
+        except TimeoutException:
+            return False
+
+        return True

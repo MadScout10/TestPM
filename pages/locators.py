@@ -10,11 +10,23 @@ class BasePageLocators:
     STRETCH = (By.ID, 'promoStretching')
     STRETCH_TIMER = (By.CLASS_NAME, 'countdown active')
     LOGO = (By.CSS_SELECTOR, 'a.header-logo')
+    LK_ICON = (By.CSS_SELECTOR, '')
+    FAV_ICON = (By.CSS_SELECTOR, '')
+    COMPARE_ICON = (By.CSS_SELECTOR, '')
+    FAVORITE_COUNT_MAIN = (By.ID,'top-favorite-qty')
+    COMPARE_COUNT_MAIN = (By.ID, 'top-compare-qty')
 
 
 class ListingPageLocators:
     LISTING_H1 = (By.CSS_SELECTOR, 'div h1')
     ITEM_LNK = (By.CLASS_NAME, "good__link-wrapper")
+    ADD_TO_FAVORITE_LISTING = (By.CLASS_NAME, 'good__favorite')
+    ADD_TO_COMPARE_LISTING = (By.CLASS_NAME, 'good__compare')
+    FAVORITE_COUNT_LISTING = (By.ID,'top-favorite-qty')
+    COMPARE_COUNT_LISTING = (By.ID, 'top-compare-qty')
+    LK_ICON_LISTING = (By.CSS_SELECTOR, '')
+    FAV_ICON_LISTING = (By.CSS_SELECTOR, 'div.header-favorite')
+    COMPARE_ICON_LISTING = (By.CSS_SELECTOR, 'div.header-compare')
 
 
 class ProductPageLocators:
@@ -29,6 +41,8 @@ class ProductPageLocators:
     COLORS = (By.CSS_SELECTOR, "ul.pr-det_block-color")
     COLOR1 = (By.CSS_SELECTOR, "ul.pr-det_block-color > :nth-child(1)")
     PHOTOS = (By.CLASS_NAME, "prod-slider ")
+    FAVORITE_COUNT_PC = (By.ID,'top-favorite-qty')
+    COMPARE_COUNT_PC = (By.ID, 'top-compare-qty')
 
 
 class BasketPageLocators:
@@ -40,3 +54,17 @@ class BasketPageLocators:
     PRODNAME = (By.CSS_SELECTOR, 'a.detail-order-good-card__name')
     PRODVAR = (By.CSS_SELECTOR, 'li.detail-order-good-card__colors-item span')
     PRODPRICE = (By.CSS_SELECTOR, 'div.detail-order-good-card__prices > div.detail-order-good-card__current-price')
+
+
+class V2PageLocators:
+    V2LK_ICON = (By.CSS_SELECTOR, '')
+    V2FAV_ICON = (By.CSS_SELECTOR, '')
+    V2COMPARE_ICON = (By.CSS_SELECTOR, '')
+    MENU_LK = (By.CSS_SELECTOR, '')
+    MENU_FAV = (By.CSS_SELECTOR, '')
+    MENU_ORDERS = (By.CSS_SELECTOR, '')
+    MENU_COMPARE = (By.CSS_SELECTOR, '')
+    MENU_EXIT = (By.CSS_SELECTOR, '')
+    MENU_REVIEWS = (By.CSS_SELECTOR, '')
+    MENU_SUPPORT = (By.CSS_SELECTOR, '')
+    MENU = (By.CSS_SELECTOR, 'ul.column-navigation__list')

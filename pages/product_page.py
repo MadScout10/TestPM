@@ -54,29 +54,6 @@ class ProductPage(BasePage):
             assert self.is_not_element_present(*ProductPageLocators.SUCCESS_MESSAGE), \
                 'Кнопка "купить не работает"'
 
-    # noinspection PyTypeChecker
-    def is_disappeared(self, how, what, timeout=4):
-        try:
-            WebDriverWait(self.browser, timeout, 1, TimeoutException).\
-                until_not(EC.presence_of_element_located((how, what)))
-        except TimeoutException:
-            return False
-        return True
-
-    def is_element_present(self, how, what):
-        try:
-            self.browser.find_element(how, what)
-        except NoSuchElementException:
-            return False
-        return True
-
-    def is_not_element_present(self, how, what, timeout=4):
-        try:
-            WebDriverWait(self.browser, timeout).until(EC.presence_of_element_located((how, what)))
-        except TimeoutException:
-            return True
-        return False
-
     def is_prodcard_open(self):
         with allure.step('Проверка открытия КТ'):
             assert self.is_element_present(*ProductPageLocators.PHOTOS), \
@@ -105,3 +82,26 @@ class ProductPage(BasePage):
     def success_message_should_disappear(self):
         assert self.is_disappeared(*ProductPageLocators.SUCCESS_MESSAGE), \
            "Success message is not presented, but should be"
+
+    def is_element_present(self, how, what):
+        try:
+            self.browser.find_element(how, what)
+        except NoSuchElementException:
+            return False
+        return True
+
+    def is_not_element_present(self, how, what, timeout=4):
+        try:
+            WebDriverWait(self.browser, timeout).until(EC.presence_of_element_located((how, what)))
+        except TimeoutException:
+            return True
+        return False
+
+    # noinspection PyTypeChecker
+    def is_disappeared(self, how, what, timeout=4):
+        try:
+            WebDriverWait(self.browser, timeout, 1, TimeoutException). \
+                until_not(EC.presence_of_element_located((how, what)))
+        except TimeoutException:
+            return False
+        return True
