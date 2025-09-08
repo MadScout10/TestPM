@@ -1,6 +1,6 @@
 name: Infinite Test Runner
 
-#on:
+on:
 # schedule:
 #   - cron: '*/20 * * * *'  # Каждые 20 минут
 
