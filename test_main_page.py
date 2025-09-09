@@ -1,6 +1,6 @@
 import pytest
 from selenium.webdriver.common.by import By
-from pages.basket_page import BasketPage
+from .pages.basket_page import BasketPage
 from .pages.listing_page import ListingPage
 from .pages.product_page import ProductPage
 from .pages.main_page import MainPage

@@ -1,5 +1,5 @@
 import pytest
-from pages.listing_page import ListingPage
+from .pages.listing_page import ListingPage
 # from .pages.basket_page import BasketPage
 from .pages.v2_page import V2Page
 # from .pages.base_page import BasePage
