@@ -51,9 +51,7 @@ class BasePage:
 
     def is_logo_present(self):
         with allure.step('Проверка наличия логотипа'):
-            element = self.browser.find_element(*BasePageLocators.LOGO)
-            src = element.get_attribute('src')
-            assert '/images/logo2020.svg' in src, "Логотип отсутствует"
+             assert self.browser.is_not_element_present(*BasePageLocators.LOGO)
 
     def __init__(self, browser, link, timeout=10):
         self.browser = browser

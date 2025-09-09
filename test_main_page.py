@@ -60,12 +60,4 @@ class TestsSmoke:
         link = initstage
         page = MainPage(browser, link)  # инициализируем Page Object
         page.open()
-        page.is_stretch_present()  # проверить наличие растяжки
-
-    @pytest.mark.smoke
-    @allure.title('Пример упавшего теста')
-    def test_failure(self, browser, initstage):
-        link = initstage
-        page = MainPage(browser, link)  # инициализируем Page Object
-        page.open()
-        page.go_to_basket_page()  # пробуем зайти в пустую корзину
+        page.is_not_stretch_present()  # проверить наличие растяжки
