@@ -66,18 +66,9 @@ jobs:
       - name: Install Chrome
         run: sudo apt-get install google-chrome-stable
       - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
-          pip install python-telegram-bot==20.3 PyYAML==6.0.1
+        run: pip install -r requirements.txt
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v4
-      
-      # Безопасная очистка (только свежих результатов, сохраняем историю)
-      - name: Clean only fresh results
-        run: |
-          # Удаляем только файлы результатов, сохраняя историю
-          find results -name "*-result.*" -mmin +120 -delete 2>/dev/null || true
-          echo "Удалены старые файлы результатов (старше 2 часов)"
       
       - name: Run tests infinitely
         run: pytest -m smoke --alluredir=results
@@ -85,7 +76,7 @@ jobs:
       
       # Анализ и отправка уведомления
       - name: Analyze and send infinite report
-        run: python ./inf_send_report.py
+        run: python parse_pytest_output.py
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TGBOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TGCHATID }}
