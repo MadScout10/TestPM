@@ -75,13 +75,10 @@ async def send_telegram_report(token, chat_id, report):
         message = f"❌ Ошибка парсинга: {report['error']}"
     else:
         message = (
-            "📊 Сводка всех тестов\n"
-            f"✅ Успешно: {report['passed']}\n"
+            "ALERT! Есть упавшие тесты:\n"
             f"❌ Упавшие: {report['failed']}\n"
-            f"⏩ Пропущенные: {report['skipped']}\n"
             f"🔶 XFAIL: {report['xfailed']}\n"
             f"🔢 Всего тестов: {report['total']}\n"
-            f"📈 Успешность: {report['success_rate']:.2f}%"
         )
     
     await bot.send_message(chat_id=chat_id, text=message)
