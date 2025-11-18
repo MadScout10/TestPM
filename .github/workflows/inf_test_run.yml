@@ -2,7 +2,7 @@ name: Infinite Test Runner
 
 on:
  schedule:
-  - cron: '*/30 * * * *'  # Каждые 30 минут
+  # - cron: '*/30 * * * *'  # Каждые 30 минут
 
 permissions:
   contents: read
